@@ -1,0 +1,22 @@
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.StructField
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.types.DateType
+import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.LongType
+
+
+
+ val def_schema= StructType(StructField("Date" , DateType, true)::StructField("registrar" , StringType , true)::StructField("private_agency" , StringType, true)::StructField("state" , StringType, true)::StructField("district" , StringType, true)::StructField("sub_district" ,StringType , true)::StructField("pincode" , LongType, true)::StructField("gender" , StringType, true)::StructField("age" , IntegerType, true)::StructField("aadhaar_generated" , IntegerType, true)::StructField("rejected" , IntegerType, true)::StructField("mobile_number" , LongType, true)::StructField("email_id" , LongType, true)::Nil)
+
+
+
+val df= spark.read.option("delimeter", ",").option("dateFormat", "yyyyMMdd").schema(def_schema).csv("C:/Users/dell/Downloads/aadhaar_data.csv")
+
+//df.printSchema()
+//val schema_des=df.schema
+//println(schema_des)
+df.createOrReplaceTempView("adhr")
+spark.sql("SELECT x.* FROM (select DISTINCT private_agency from adhr) c cross apply ( select top 25 * from adhr t where c.private_agency=t.private_agency) x ").show()
